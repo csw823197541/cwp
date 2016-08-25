@@ -27,6 +27,20 @@ public class Crane {
     private Integer width;
     private List<WorkTimeRange> workTimeRanges;
 
+    public CraneDynamic craneDynamic;
+
+    public Crane() {
+        craneDynamic = new CraneDynamic();
+    }
+
+    public CraneDynamic getCraneDynamic() {
+        return craneDynamic;
+    }
+
+    public void setCraneDynamic(CraneDynamic craneDynamic) {
+        this.craneDynamic = craneDynamic;
+    }
+
     public Integer getCurrentPosition() {
         return currentPosition;
     }

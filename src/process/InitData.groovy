@@ -27,6 +27,7 @@ public class InitData {
                 Crane crane = new Crane();
                 assert it instanceof Map
                 crane.currentPosition = it.CURRENTPOSITION;
+                crane.craneDynamic.mCurrentPosition = it.CURRENTPOSITION;
                 crane.disEff20 = it.DISCHARGEEFFICIENCY20;
                 crane.disEff40 = it.DISCHARGEEFFICIENCY40;
                 crane.disEffTwin = it.DISCHARGEEFFICIENCYTWIN;
@@ -86,10 +87,13 @@ public class InitData {
                 Hatch hatch = new Hatch();
                 assert it instanceof Map
                 hatch.horizontalStartPosition = it.HORIZONTALSTARTPOSITION;
+                hatch.hatchDynamic.mCurrentWorkPosition = it.HORIZONTALSTARTPOSITION;
                 hatch.hatchId = it.ID;
                 hatch.vesselId = it.VESSELID;
                 hatch.length = it.LENGTH;
                 hatch.moveCount = it.MOVECOUNT;
+                hatch.hatchDynamic.mMoveCount = it.MOVECOUNT;
+                hatch.hatchDynamic.mCurrentMoveIdx = 0;
                 hatch.hatchNo = it.NO;
                 hatch.hatchSeq = it.SEQ;
 

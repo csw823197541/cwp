@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,30 @@ public class Hatch {
     private String hatchNo;
     private String hatchSeq;
     private List<WorkTimeRange> workTimeRanges;
+
+    public HatchDynamic hatchDynamic;
+    public List<Move> mMoves;
+
+    public Hatch() {
+        hatchDynamic = new HatchDynamic();
+        mMoves = new ArrayList<>();
+    }
+
+    public List<Move> getmMoves() {
+        return mMoves;
+    }
+
+    public void setmMoves(List<Move> mMoves) {
+        this.mMoves = mMoves;
+    }
+
+    public HatchDynamic getHatchDynamic() {
+        return hatchDynamic;
+    }
+
+    public void setHatchDynamic(HatchDynamic hatchDynamic) {
+        this.hatchDynamic = hatchDynamic;
+    }
 
     public Double getHorizontalStartPosition() {
         return horizontalStartPosition;
