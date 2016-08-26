@@ -1,6 +1,7 @@
 package test;
 
 import process.CWP;
+import process.CWP1;
 import utils.FileUtil;
 
 import java.io.File;
@@ -21,5 +22,6 @@ public class Test {
         CWP cwp = new CWP();
         cwp.initData(crane, hatch, move);
         cwp.cwpKernel();
+
     }
 }

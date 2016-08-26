@@ -63,15 +63,15 @@ public class InitData {
                 craneList.add(crane);
             }
         }catch (Exception e){
-            System.out.println("parsing crane, json data exception!")
+            System.out.println("Parsing crane, json data exception!")
             isError = true;
             e.printStackTrace()
         }
         if(isError) {
-            System.out.println("crane init failure!")
+            System.out.println("Crane init failure!")
             return null;
         }else {
-            System.out.println("crane init success! the number of cranes is: " + craneList.size())
+            System.out.println("Crane init success! the number of cranes is: " + craneList.size())
             return craneList
         }
     }
@@ -115,15 +115,15 @@ public class InitData {
                 hatchList.add(hatch);
             }
         }catch (Exception e){
-            System.out.println("parsing hatch, json data exception!")
+            System.out.println("Parsing hatch, json data exception!")
             isError = true;
             e.printStackTrace()
         }
         if(isError) {
-            System.out.println("hatch init failure!")
+            System.out.println("Hatch init failure!")
             return null;
         }else {
-            System.out.println("hatch init success! the number of hatches is: " + hatchList.size())
+            System.out.println("Hatch init success! the number of hatches is: " + hatchList.size())
             return hatchList
         }
     }
@@ -148,15 +148,15 @@ public class InitData {
                 moveList.add(move);
             }
         }catch (Exception e){
-            System.out.println("parsing move, json data exception!")
+            System.out.println("Parsing move, json data exception!")
             isError = true;
             e.printStackTrace()
         }
         if(isError) {
-            System.out.println("move init failure!")
+            System.out.println("Move init failure!")
             return null;
         }else {
-            System.out.println("move init success! the number of moves is: " + moveList.size())
+            System.out.println("Move init success! the number of moves is: " + moveList.size())
             return moveList
         }
     }
