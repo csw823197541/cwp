@@ -33,7 +33,7 @@ public class DP {
             dp[0][0].dpDistance = Math.abs(cranes.get(0).craneDynamic.mCurrentPosition - hatches.get(0).hatchDynamic.mCurrentWorkPosition);
             dp[0][0].dpTraceBack.add(new Pair(0, 0));
         } else {
-            dp[0][0].dpDistance = 0;
+            dp[0][0].dpDistance = 0.0;
         }
         for (int i = 1; i < nc; i++) {
             DPResult cur_dp = new DPResult();

@@ -6,13 +6,26 @@ package entity;
  */
 public class CraneDynamic {
 
-    public Integer mCurrentPosition;
+    public Double mCurrentPosition;
+    public Integer mCurrentWorkST;
 
-    public Integer getmCurrentPosition() {
+    public CraneDynamic() {
+        mCurrentWorkST = 0;
+    }
+
+    public Integer getmCurrentWorkST() {
+        return mCurrentWorkST;
+    }
+
+    public void setmCurrentWorkST(Integer mCurrentWorkST) {
+        this.mCurrentWorkST = mCurrentWorkST;
+    }
+
+    public Double getmCurrentPosition() {
         return mCurrentPosition;
     }
 
-    public void setmCurrentPosition(Integer mCurrentPosition) {
+    public void setmCurrentPosition(Double mCurrentPosition) {
         this.mCurrentPosition = mCurrentPosition;
     }
 }

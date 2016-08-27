@@ -6,15 +6,21 @@ package entity;
  */
 public class HatchDynamic {
 
-    public Integer mCurrentWorkPosition;
+    public Double mCurrentWorkPosition;
     public Integer mMoveCount;
     public Integer mCurrentMoveIdx;
 
-    public Integer getmCurrentWorkPosition() {
+    public HatchDynamic() {
+        mMoveCount = 0;
+        mCurrentMoveIdx = 0;
+        mCurrentWorkPosition = 0.0;
+    }
+
+    public Double getmCurrentWorkPosition() {
         return mCurrentWorkPosition;
     }
 
-    public void setmCurrentWorkPosition(Integer mCurrentWorkPosition) {
+    public void setmCurrentWorkPosition(Double mCurrentWorkPosition) {
         this.mCurrentWorkPosition = mCurrentWorkPosition;
     }
 

@@ -10,12 +10,12 @@ import java.util.List;
 public class DPResult {
 
     public int dpMoveCount;
-    public int dpDistance;
+    public Double dpDistance;
     public List<Pair> dpTraceBack;
 
     public DPResult() {
         dpMoveCount = 0;
-        dpDistance = Integer.MAX_VALUE;
+        dpDistance = Double.MAX_VALUE;
         dpTraceBack = new ArrayList<>();
     }
 
@@ -27,11 +27,11 @@ public class DPResult {
         this.dpMoveCount = dpMoveCount;
     }
 
-    public int getDpDistance() {
+    public Double getDpDistance() {
         return dpDistance;
     }
 
-    public void setDpDistance(int dpDistance) {
+    public void setDpDistance(Double dpDistance) {
         this.dpDistance = dpDistance;
     }
 
