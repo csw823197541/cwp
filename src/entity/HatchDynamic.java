@@ -1,10 +1,12 @@
 package entity;
 
+import java.io.Serializable;
+
 /**
  * Created by csw on 2016/8/25 8:21.
  * Explain:
  */
-public class HatchDynamic {
+public class HatchDynamic implements Serializable{
 
     public Double mCurrentWorkPosition;
     public Integer mMoveCount;

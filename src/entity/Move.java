@@ -1,10 +1,12 @@
 package entity;
 
+import java.io.Serializable;
+
 /**
  * Created by csw on 2016/8/24 15:04.
  * Explain:
  */
-public class Move {
+public class Move implements Serializable{
 
     private Integer moveOrder;
     private String deck;

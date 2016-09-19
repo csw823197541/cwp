@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Created by csw on 2016/8/24 15:04.
  * Explain:
  */
-public class Hatch {
+public class Hatch implements Serializable{
 
     private Double horizontalStartPosition;
     private String hatchId;
@@ -104,5 +105,26 @@ public class Hatch {
 
     public void setWorkTimeRanges(List<WorkTimeRange> workTimeRanges) {
         this.workTimeRanges = workTimeRanges;
+    }
+
+    public Hatch deepCopy() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+            oos.writeObject(this);
+
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+
+            return (Hatch) ois.readObject();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

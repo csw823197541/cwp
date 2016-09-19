@@ -1,12 +1,13 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by csw on 2016/8/24 21:44.
  * Explain:
  */
-public class WorkTimeRange {
+public class WorkTimeRange implements Serializable{
 
     private Integer id;
     private Date workStartTime;

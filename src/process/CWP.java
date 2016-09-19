@@ -132,7 +132,7 @@ public class CWP {
 
             //recursive
             List<CwpBlock> cwp_block = new ArrayList<>();
-            Double time = cwpRealWork(dp_Results.get(i), cwpData.cwpCurSolution.getCwpWorkTime(),
+            Integer time = cwpRealWork(dp_Results.get(i), cwpData.cwpCurSolution.getCwpWorkTime(),
                     cwpData.cranes, cwpData.hatches, cwp_block);
             cwpData.cwpCurSolution.getCwpResult().add(cwp_block);//?
             cwpData.cwpCurSolution.setCwpWorkTime(cwpData.cwpCurSolution.getCwpWorkTime() + time);
@@ -150,8 +150,76 @@ public class CWP {
 
     }
 
-    private Double cwpRealWork(DPResult dpResult, Double cwpWorkTime, List<Crane> cranes, List<Hatch> hatches, List<CwpBlock> cwp_block) {
-        return null;
+    private Integer cwpRealWork(DPResult dpResult, Integer start_time, List<Crane> cranes,
+                               List<Hatch> hatches, List<CwpBlock> cwp_block) {
+
+        List<Pair> trace_back = dpResult.dpTraceBack;
+        if (trace_back.isEmpty()) {
+            //get out method
+        }
+        int nr = trace_back.size();
+
+        //init cwp block & find min work time
+        for (int i = 0; i < nr; i++) {
+            cwp_block.add(new CwpBlock());
+        }
+        int min_time = 0;
+        for (int t = 0; t < nr; t++) {
+            Crane crane = cranes.get((Integer) trace_back.get(t).first);
+            Hatch hatch = hatches.get((Integer) trace_back.get(t).second);
+
+            cwp_block.get(t).setmCraneId(crane.getCraneId());
+            cwp_block.get(t).setmHatchId(hatch.getHatchId());
+            cwp_block.get(t).setmWorkStartTime(start_time);
+
+            if (hatch.hatchDynamic.mMoveCount == 0) {
+                cwp_block.get(t).setmTrueBlock(false);
+                continue;
+            }
+            Double last_position = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).
+                    getHorizontalPosition();
+            for (int k = hatch.hatchDynamic.mCurrentMoveIdx; k < hatch.getMoveCount(); k++) {
+                if (hatch.getmMoves().get(k).getHorizontalPosition() != last_position) {
+                    break;
+                }
+                cwp_block.get(t).setmWorkCostTime(cwp_block.get(t).getmWorkCostTime() + cost(crane, hatch.getmMoves().get(k).getMoveType()));
+            }
+
+            min_time = Math.min(min_time, cwp_block.get(t).getmWorkCostTime());
+        }
+
+        //work
+        for (int t = 0; t < nr; t++) {
+            if (!cwp_block.get(t).ismTrueBlock()) {
+                continue;
+            }
+            Crane crane = cranes.get((Integer) trace_back.get(t).first);
+            Hatch hatch = hatches.get((Integer) trace_back.get(t).second);
+            crane.craneDynamic.mCurrentPosition = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getHorizontalPosition();
+
+            cwp_block.get(t).setmWorkCostTime(0);
+            for (; hatch.hatchDynamic.mCurrentMoveIdx < hatch.getMoveCount(); hatch.hatchDynamic.mCurrentMoveIdx++) {
+                int cur_cost = cost(crane, hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getMoveType());
+                if (cwp_block.get(t).getmWorkCostTime() + cur_cost > min_time) {
+                    break;
+                }
+
+                cwp_block.get(t).setmWorkCostTime(cwp_block.get(t).getmWorkCostTime() + cur_cost);
+                cwp_block.get(t).setmMoveCount(cwp_block.get(t).getmMoveCount() + 1);
+                cwp_block.get(t).getmMoves().add(hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx));
+            }
+            cwp_block.get(t).setmWorkEndTime(cwp_block.get(t).getmWorkStartTime() + cwp_block.get(t).getmWorkCostTime());
+
+            hatch.hatchDynamic.mMoveCount = hatch.getMoveCount() - hatch.hatchDynamic.mCurrentMoveIdx;
+            if (hatch.hatchDynamic.mMoveCount != 0) {
+                hatch.hatchDynamic.mCurrentWorkPosition = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getHorizontalPosition();
+            }
+        }
+        return min_time;
+    }
+
+    private Integer cost(Crane crane, String moveType) {
+        return 3600/32;
     }
 
 

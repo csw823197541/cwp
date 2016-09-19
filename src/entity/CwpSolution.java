@@ -9,19 +9,19 @@ import java.util.List;
  */
 public class CwpSolution {
 
-    private Double cwpWorkTime;
+    private Integer cwpWorkTime;
     private List<List<CwpBlock>> cwpResult;
 
     public CwpSolution() {
-        cwpWorkTime = 0.0;
+        cwpWorkTime = 0;
         cwpResult = new ArrayList<>();
     }
 
-    public Double getCwpWorkTime() {
+    public Integer getCwpWorkTime() {
         return cwpWorkTime;
     }
 
-    public void setCwpWorkTime(Double cwpWorkTime) {
+    public void setCwpWorkTime(Integer cwpWorkTime) {
         this.cwpWorkTime = cwpWorkTime;
     }
 

@@ -89,13 +89,22 @@ public class CWP1 {
         int tmpMoveCount = 0;
         for (int i = 0; i < nh; i++) {
             Hatch hatch = cwpData.hatches.get(i);
-            craneHatchBlockMap.get(c).add(hatch);
             tmpMoveCount += hatch.hatchDynamic.mMoveCount;
             int meanL = (int) (mean - mean * 0.1);
             int meanR = (int) (mean + mean * 0.1);
-            if (tmpMoveCount >= meanL) {
+            if (tmpMoveCount >= meanL && tmpMoveCount <= meanR) {
+                craneHatchBlockMap.get(c).add(hatch);
                 c++;
                 tmpMoveCount = 0;
+            }
+            else if (tmpMoveCount > meanR) {
+                Hatch hatchL = hatch.deepCopy();
+                Hatch hatchR = hatch.deepCopy();
+                hatchL.hatchDynamic.mMoveCount = hatch.hatchDynamic.mMoveCount - (tmpMoveCount - mean);
+                hatchR.hatchDynamic.mMoveCount = tmpMoveCount - mean;
+            }
+            else {
+                craneHatchBlockMap.get(c).add(hatch);
             }
         }
     }
