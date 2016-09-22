@@ -9,6 +9,9 @@ public class CraneDynamic {
     public Double mCurrentPosition;
     public Integer mCurrentWorkST;
 
+    public Integer mMoveRangeFrom;
+    public Integer mMoveRangeTo;
+
     public CraneDynamic() {
         mCurrentWorkST = 0;
     }

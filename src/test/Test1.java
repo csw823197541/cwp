@@ -18,7 +18,7 @@ public class Test1 {
 
     public static void main(String[] args) {
 
-        String filePath = "toCwpData8.15/";
+        String filePath = "toCwpData8.26/";
         String crane = FileUtil.readFileToString(new File(filePath + "crane.txt")).toString();
         String hatch = FileUtil.readFileToString(new File(filePath + "hatch.txt")).toString();
         String move = FileUtil.readFileToString(new File(filePath + "moves.txt")).toString();

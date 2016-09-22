@@ -1,9 +1,6 @@
 package entity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by csw on 2016/8/24 22:35.
@@ -22,6 +19,8 @@ public class CwpData {
 
     public Map<String, Integer> hatchIdxMap;
 
+    public Map<Integer, Set<Double>> hatchIdxPosMap;
+
     public CwpData() {
         cranes = new ArrayList<>();
         hatches = new ArrayList<>();
@@ -29,5 +28,6 @@ public class CwpData {
         cwpCurSolution = new CwpSolution();
         cwpBestSolution = new CwpSolution();
         hatchIdxMap = new HashMap<>();
+        hatchIdxPosMap = new HashMap<>();
     }
 }

@@ -60,6 +60,9 @@ public class InitData {
                 }
                 crane.workTimeRanges = workTimeRangeList
 
+//                crane.craneDynamic.mMoveRangeFrom = it.MOVINGRANGEFROM;
+//                crane.craneDynamic.mMoveRangeTo = it.MOVINGRANGETO;
+
                 craneList.add(crane);
             }
         }catch (Exception e){
@@ -92,6 +95,7 @@ public class InitData {
                 hatch.vesselId = it.VESSELID;
                 hatch.length = it.LENGTH;
                 hatch.moveCount = it.MOVECOUNT;
+                hatch.hatchDynamic.mMoveCountL = it.MOVECOUNT;
                 hatch.hatchDynamic.mMoveCount = it.MOVECOUNT;
                 hatch.hatchDynamic.mCurrentMoveIdx = 0;
                 hatch.hatchNo = it.NO;
