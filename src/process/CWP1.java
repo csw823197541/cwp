@@ -173,6 +173,7 @@ public class CWP1 {
                 if (lastHatchIdx != -1 && lastHatchIdx <= crane.craneDynamic.mMoveRangeTo) {
                     Hatch lastHatch = cwpData.hatches.get(lastHatchIdx);
                     if (lastHatch.hatchDynamic.mMoveCount > 0) {
+                        lastPos = lastHatch.getmMoves().get(lastHatch.hatchDynamic.mCurrentMoveIdx).getHorizontalPosition();
                         if (this.isCraneSafe(i, lastPos)) {
                             cwpCSH.dpTraceBack.add(new Pair(i, lastHatchIdx));
                             cwpCSH1.dpTraceBack.add(new Pair(i, lastHatchIdx));
@@ -197,19 +198,20 @@ public class CWP1 {
                     crane.craneDynamic.mCurrentPosition = selectPos;
                 }
             } else {
-                cwpCSH.dpTraceBack.add(new Pair(i, -1));
-                cwpCSH1.dpTraceBack.add(new Pair(i, -1));
-//                if (isSafeSpanNotEnough) {
-//                    cwpCSH.dpTraceBack.get(i - 1).setSecond(-1);
-//                    cwpCSH1.dpTraceBack.get(i - 1).setSecond(-1);
-//                    //
-//                    cwpCSH.dpTraceBack.add(new Pair(i, jj));
-//                    cwpCSH1.dpTraceBack.add(new Pair(i, jj));
-//                    crane.craneDynamic.mCurrentPosition = selectPos;
-//                } else {
-//                    cwpCSH.dpTraceBack.add(new Pair(i, -1));
-//                    cwpCSH1.dpTraceBack.add(new Pair(i, -1));
-//                }
+//                cwpCSH.dpTraceBack.add(new Pair(i, -1));
+//                cwpCSH1.dpTraceBack.add(new Pair(i, -1));
+                if (isSafeSpanNotEnough) {
+                    //
+                    cwpCSH.dpTraceBack.get(i - 1).setSecond(-1);
+                    cwpCSH1.dpTraceBack.get(i - 1).setSecond(-1);
+                    //
+                    cwpCSH.dpTraceBack.add(new Pair(i, jj));
+                    cwpCSH1.dpTraceBack.add(new Pair(i, jj));
+                    crane.craneDynamic.mCurrentPosition = selectPos;
+                } else {
+                    cwpCSH.dpTraceBack.add(new Pair(i, -1));
+                    cwpCSH1.dpTraceBack.add(new Pair(i, -1));
+                }
             }
         }
         return cwpCSH1;

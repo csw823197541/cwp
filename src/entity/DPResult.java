@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Created by csw on 2016/8/24 16:15.
  * Explain:
  */
-public class DPResult {
+public class DPResult implements Serializable{
 
     public int dpMoveCount;
     public Double dpDistance;
@@ -41,6 +42,27 @@ public class DPResult {
 
     public void setDpTraceBack(List<Pair> dpTraceBack) {
         this.dpTraceBack = dpTraceBack;
+    }
+
+    public DPResult deepCopy() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+            oos.writeObject(this);
+
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+
+            return (DPResult) ois.readObject();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 

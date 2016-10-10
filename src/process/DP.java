@@ -40,10 +40,10 @@ public class DP {
             cur_dp.dpMoveCount = hatches.get(0).hatchDynamic.mMoveCount;
             cur_dp.dpDistance = Math.abs(cranes.get(i).craneDynamic.mCurrentPosition - hatches.get(0).hatchDynamic.mCurrentWorkPosition);
             if (better(cur_dp, dp[i - 1][0])) {
-                dp[i][0] = cur_dp;
+                dp[i][0] = cur_dp.deepCopy();
                 dp[i][0].dpTraceBack.add(new Pair(i, 0));
             } else {
-                dp[i][0] = dp[i - 1][0];
+                dp[i][0] = dp[i - 1][0].deepCopy();
             }
         }
         for (int j = 1; j < nh; j++) {
@@ -51,10 +51,10 @@ public class DP {
             cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCount;
             cur_dp.dpDistance = Math.abs(cranes.get(0).craneDynamic.mCurrentPosition - hatches.get(j).hatchDynamic.mCurrentWorkPosition);
             if (better(cur_dp, dp[0][j - 1])) {
-                dp[0][j] = cur_dp;
+                dp[0][j] = cur_dp.deepCopy();
                 dp[0][j].dpTraceBack.add(new Pair(0, j));
             } else {
-                dp[0][j] = dp[0][j - 1];
+                dp[0][j] = dp[0][j - 1].deepCopy();
             }
         }
 
@@ -77,22 +77,20 @@ public class DP {
                 // dp compare
                 DPResult tmp_dp = new DPResult();
                 if (better(dp[i][j - 1], dp[i - 1][j])) {
-                    tmp_dp = dp[i][j - 1];
+                    tmp_dp = dp[i][j - 1].deepCopy();
                 } else {
-                    tmp_dp = dp[i - 1][j];
+                    tmp_dp = dp[i - 1][j].deepCopy();
                 }
                 if (better(cur_dp, tmp_dp)) {
-                    dp[i][j] = cur_dp;
+                    dp[i][j] = cur_dp.deepCopy();
                     dp[i][j].dpTraceBack.add(new Pair(i, j));
                 } else {
-                    dp[i][j] = tmp_dp;
+                    dp[i][j] = tmp_dp.deepCopy();
                 }
             }
         }
-        dpResult = dp[dp.length - 1][dp.length - 1];
+        dpResult = dp[nc-1][nh - 1].deepCopy();
         return dpResult.dpTraceBack.size();
-
-
     }
 
     private boolean better(DPResult cur_dp, DPResult dpResult) {

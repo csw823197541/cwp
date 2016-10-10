@@ -1,10 +1,12 @@
 package entity;
 
+import java.io.Serializable;
+
 /**
  * Created by csw on 2016/8/24 16:22.
  * Explain:
  */
-public class Pair<A, B> {
+public class Pair<A, B> implements Serializable{
 
     public A first;
 

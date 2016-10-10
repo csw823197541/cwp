@@ -21,7 +21,7 @@ public class CWP {
     public void initData(String craneJsonStr, String hatchJsonStr, String moveJsonStr) {
 
         List<Crane> inputCranes = sortCraneByPosition(InitData.initCrane(craneJsonStr));
-        for (int k = 0; k < 4; k++) {
+        for (int k = 0; k < 3; k++) {
             cwpData.cranes.add(inputCranes.get(k));
         }
 
@@ -65,8 +65,8 @@ public class CWP {
 
     public void cwpSearch(int depth) {
         boolean isFinish = true;
-        for (int i = 0; i < cwpData.hatches.size(); i++) {
-            if (cwpData.hatches.get(i).hatchDynamic.mMoveCount != 0) {
+        for (int j = 0; j < cwpData.hatches.size(); j++) {
+            if (cwpData.hatches.get(j).hatchDynamic.mMoveCount != 0) {
                 isFinish = false;
             }
         }
