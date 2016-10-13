@@ -28,25 +28,28 @@ class CwpResultInfoProcess {
             root.each { cwpResult ->
                 CwpResultInfo cwpResultInfo = new CwpResultInfo()
                 assert cwpResult instanceof Map
-                cwpResultInfo.CRANEID = cwpResult.CRANEID
-                cwpResultInfo.CranesPosition = Double.valueOf(df.format(cwpResult.CranesPosition))
-                cwpResultInfo.HATCHBWID = cwpResult.HATCHBWID
-                cwpResultInfo.HATCHID = cwpResult.HATCHID
-                cwpResultInfo.MOVECOUNT = cwpResult.MOVECOUNT
-                cwpResultInfo.QDC = cwpResult.QDC
-                cwpResultInfo.StartMoveID = cwpResult.StartMoveID
-                cwpResultInfo.VESSELID = cwpResult.VESSELD
-                cwpResultInfo.WORKINGENDTIME = cwpResult.WORKINGENDTIME
-                cwpResultInfo.REALWORKINGSTARTTIME = cwpResult.REALWORKINGSTARTTIME
-                cwpResultInfo.WORKINGSTARTTIME = cwpResult.WORKINGSTARTTIME
-                cwpResultInfo.endMoveID = cwpResult.EndMoveID
-                cwpResultInfo.MOVETYPE = cwpResult.MOVETYPE
-                cwpResultInfo.LDULD = cwpResult.mLD
+                if (cwpResult.MOVECOUNT != 0) {
+                    cwpResultInfo.CRANEID = cwpResult.CRANEID
+                    cwpResultInfo.CranesPosition = Double.valueOf(df.format(cwpResult.CranesPosition))
+                    cwpResultInfo.HATCHBWID = cwpResult.HATCHBWID
+                    cwpResultInfo.HATCHID = cwpResult.HATCHID
+                    cwpResultInfo.MOVECOUNT = cwpResult.MOVECOUNT
+                    cwpResultInfo.QDC = cwpResult.QDC
+                    cwpResultInfo.StartMoveID = cwpResult.StartMoveID
+                    cwpResultInfo.VESSELID = cwpResult.VESSELD
+                    cwpResultInfo.WORKINGENDTIME = cwpResult.WORKINGENDTIME
+                    cwpResultInfo.REALWORKINGSTARTTIME = cwpResult.REALWORKINGSTARTTIME
+                    cwpResultInfo.WORKINGSTARTTIME = cwpResult.WORKINGSTARTTIME
+                    cwpResultInfo.endMoveID = cwpResult.EndMoveID
+                    cwpResultInfo.MOVETYPE = cwpResult.MOVETYPE
+                    cwpResultInfo.LDULD = cwpResult.mLD
 
-                cwpResultInfo.workingStartTime = new Date(stLong + cwpResult.REALWORKINGSTARTTIME.intValue()*1000)
-                cwpResultInfo.workingEndTime = new Date(stLong + cwpResult.WORKINGENDTIME*1000)
-                cwpResultInfo.craneWorkStartTime = new Date(stLong + cwpResult.WORKINGSTARTTIME*1000)
-                cwpResultInfoList.add(cwpResultInfo)
+                    cwpResultInfo.workingStartTime = new Date(stLong + cwpResult.REALWORKINGSTARTTIME.intValue()*1000)
+                    cwpResultInfo.workingEndTime = new Date(stLong + cwpResult.WORKINGENDTIME*1000)
+                    cwpResultInfo.craneWorkStartTime = new Date(stLong + cwpResult.WORKINGSTARTTIME*1000)
+                    cwpResultInfoList.add(cwpResultInfo)
+                }
+
             }
         }catch (Exception e){
             System.out.println("Parsing cwpResult, json data exception!")

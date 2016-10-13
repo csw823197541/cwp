@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Created by csw on 2016/8/25 11:47.
  * Explain:
  */
-public class CwpSolution {
+public class CwpSolution implements Serializable{
 
     private Integer cwpWorkTime;
     private List<List<CwpBlock>> cwpResult;
@@ -31,5 +32,26 @@ public class CwpSolution {
 
     public void setCwpResult(List<List<CwpBlock>> cwpResult) {
         this.cwpResult = cwpResult;
+    }
+
+    public CwpSolution deepCopy() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+            oos.writeObject(this);
+
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+
+            return (CwpSolution) ois.readObject();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

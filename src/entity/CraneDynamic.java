@@ -1,10 +1,12 @@
 package entity;
 
+import java.io.*;
+
 /**
  * Created by csw on 2016/8/25 8:23.
  * Explain:
  */
-public class CraneDynamic {
+public class CraneDynamic implements Serializable{
 
     public Double mCurrentPosition;
     public Integer mCurrentWorkST;
@@ -30,5 +32,26 @@ public class CraneDynamic {
 
     public void setmCurrentPosition(Double mCurrentPosition) {
         this.mCurrentPosition = mCurrentPosition;
+    }
+
+    public CraneDynamic deepCopy() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+            oos.writeObject(this);
+
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+
+            return (CraneDynamic) ois.readObject();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

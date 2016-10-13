@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class DP {
 
-    public int cwpKernel(List<Crane> cranes, List<Hatch> hatches, DPResult dpResult) {
+    public DPResult cwpKernel(List<Crane> cranes, List<Hatch> hatches, DPResult dpResult) {
 
         int nc = cranes.size();
         int nh = hatches.size();
@@ -22,11 +22,13 @@ public class DP {
         }
 
         DPResult[][] dp = new DPResult[nc][nh];
-        for (int i = 0; i< nc; i++) {
-            for (int j= 0; j < nh; j++) {
+        for (int i = 0; i < nc; i++) {
+            for (int j = 0; j < nh; j++) {
                 dp[i][j] = new DPResult();
             }
         }
+
+        changeDynamicMoveCount(hatches);
 
         if (hatches.get(0).hatchDynamic.mMoveCount != 0) {
             dp[0][0].dpMoveCount = hatches.get(0).hatchDynamic.mMoveCount;
@@ -63,7 +65,7 @@ public class DP {
                 // if crane[i] is in hatch[j]
                 DPResult cur_dp = new DPResult();
                 int k = j;
-                for (; k >= 0 && hatches.get(j).hatchDynamic.mCurrentWorkPosition - cranes.get(i).getSafeSpan() <= hatches.get(k).hatchDynamic.mCurrentWorkPosition; k--)
+                for (; k >= 0 && hatches.get(j).hatchDynamic.mCurrentWorkPosition - 2 * cranes.get(i).getSafeSpan() <= hatches.get(k).hatchDynamic.mCurrentWorkPosition; k--)
                     ;
                 if (k < 0) {
                     cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCount;
@@ -74,13 +76,14 @@ public class DP {
                     cur_dp.dpTraceBack = dp[i - 1][k].dpTraceBack;
                 }
 
-                // dp compare
+                // dp compare ?
                 DPResult tmp_dp = new DPResult();
                 if (better(dp[i][j - 1], dp[i - 1][j])) {
                     tmp_dp = dp[i][j - 1].deepCopy();
                 } else {
                     tmp_dp = dp[i - 1][j].deepCopy();
                 }
+
                 if (better(cur_dp, tmp_dp)) {
                     dp[i][j] = cur_dp.deepCopy();
                     dp[i][j].dpTraceBack.add(new Pair(i, j));
@@ -89,8 +92,23 @@ public class DP {
                 }
             }
         }
-        dpResult = dp[nc-1][nh - 1].deepCopy();
-        return dpResult.dpTraceBack.size();
+        dpResult = dp[nc - 1][nh - 1].deepCopy();
+        return dpResult;
+    }
+
+    private void changeDynamicMoveCount(List<Hatch> hatches) {
+        for (int j = 0; j < hatches.size(); j++) {
+            Hatch hatch = hatches.get(j);
+            if (hatch.getMoveCount() != 0) {
+                if (j == 0) {
+                    hatch.hatchDynamic.mMoveCountL = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
+                } else if (j == hatches.size() - 1) {
+                    hatch.hatchDynamic.mMoveCountL = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j - 1).hatchDynamic.mMoveCount;
+                } else {
+                    hatch.hatchDynamic.mMoveCountL = hatches.get(j - 1).hatchDynamic.mMoveCount + 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
+                }
+            }
+        }
     }
 
     private boolean better(DPResult cur_dp, DPResult dpResult) {

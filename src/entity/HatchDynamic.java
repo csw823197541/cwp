@@ -1,6 +1,6 @@
 package entity;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * Created by csw on 2016/8/25 8:21.
@@ -45,5 +45,26 @@ public class HatchDynamic implements Serializable{
 
     public void setmCurrentMoveIdx(Integer mCurrentMoveIdx) {
         this.mCurrentMoveIdx = mCurrentMoveIdx;
+    }
+
+    public HatchDynamic deepCopy() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+            oos.writeObject(this);
+
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+
+            return (HatchDynamic) ois.readObject();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

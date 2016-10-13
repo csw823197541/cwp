@@ -8,8 +8,8 @@ import java.util.*;
  */
 public class CwpData {
 
-    public Integer cwpBranchWidth;
-    public Integer cwpBranchLimit;
+    public Integer cwpBranchWidth = 1;
+    public Integer cwpBranchLimit = 4;
 
     public List<Crane> cranes;
     public List<Hatch> hatches;

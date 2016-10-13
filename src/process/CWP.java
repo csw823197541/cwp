@@ -21,7 +21,7 @@ public class CWP {
     public void initData(String craneJsonStr, String hatchJsonStr, String moveJsonStr) {
 
         List<Crane> inputCranes = sortCraneByPosition(InitData.initCrane(craneJsonStr));
-        for (int k = 0; k < 3; k++) {
+        for (int k = 0; k < 4; k++) {
             cwpData.cranes.add(inputCranes.get(k));
         }
 
@@ -32,8 +32,17 @@ public class CWP {
         for (Hatch hatch : cwpData.hatches) {
             cwpData.hatchIdxMap.put(hatch.getHatchId(), i++);
         }
+
+        sortMoveByMoveOrder(cwpData.moves);
         for (Move move : cwpData.moves) {
             cwpData.hatches.get(cwpData.hatchIdxMap.get(move.getHatchId())).mMoves.add(move);
+        }
+
+        //init hatchDynamic.mCurrentWorkPosition
+        for (Hatch hatch : cwpData.hatches) {
+            if (hatch.hatchDynamic.mMoveCount != 0) {
+                hatch.hatchDynamic.mCurrentWorkPosition = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getHorizontalPosition();
+            }
         }
     }
 
@@ -58,6 +67,16 @@ public class CWP {
         return cranes;
     }
 
+    private List<Move> sortMoveByMoveOrder(List<Move> moves) {
+        Collections.sort(moves, new Comparator<Move>() {
+            @Override
+            public int compare(Move o1, Move o2) {
+                return o1.getMoveOrder().compareTo(o2.getMoveOrder());
+            }
+        });
+        return moves;
+    }
+
     public void cwpKernel() {
         DP dp = new DP();
         dp.cwpKernel(cwpData.cranes, cwpData.hatches, dpResult);
@@ -74,7 +93,7 @@ public class CWP {
             //save best solution
             if (cwpData.cwpBestSolution.getCwpWorkTime() == 0 ||
                     cwpData.cwpCurSolution.getCwpWorkTime() < cwpData.cwpBestSolution.getCwpWorkTime()) {
-                cwpData.cwpBestSolution = cwpData.cwpCurSolution;
+                cwpData.cwpBestSolution = cwpData.cwpCurSolution.deepCopy();
             }
         }
         //search width
@@ -84,32 +103,35 @@ public class CWP {
         }
 
         List<DPResult> dp_Results = new ArrayList<>();
-        for (int i = 0; i < branch_width; i++) {
-            dp_Results.add(new DPResult());
-        }
+//        for (int i = 0; i < branch_width; i++) {
+//            dp_Results.add(new DPResult());
+//        }
         DP dp = new DP();
-        dp.cwpKernel(cwpData.cranes, cwpData.hatches, dp_Results.get(0));
+        DPResult dpResult = new DPResult();
+        dpResult = dp.cwpKernel(cwpData.cranes, cwpData.hatches, dpResult);
+        dp_Results.add(dpResult);
+
         branch_width = Math.min(branch_width, dp_Results.get(0).dpTraceBack.size());
 
-        if (branch_width > 1) {//?
-            List<Pair> mc = new ArrayList<>();//<number of hatch, moveCount>
-            for (int j = 0; j < dp_Results.get(0).dpTraceBack.size(); j++) {
-                int h = (int) dp_Results.get(0).dpTraceBack.get(j).second;
-                mc.add(new Pair(h, cwpData.hatches.get(h).hatchDynamic.mMoveCount));
-            }
-            Collections.sort(mc, new Comparator<Pair>() {
-                @Override
-                public int compare(Pair o1, Pair o2) {
-//                    return Integer.valueOf((int) o1.second).compareTo(Integer.valueOf((int) o2.second));
-                    return (int) o1.second > (int) o2.second ? 1 : (o1.second == (int) o2.second ? 0 : -1);
-                }
-            });
-            for (int j = 1; j < branch_width; j++) {
-                cwpData.hatches.get((int) mc.get(j - 1).first).hatchDynamic.mMoveCount = 0;
-                dp.cwpKernel(cwpData.cranes, cwpData.hatches, dp_Results.get(j));
-                cwpData.hatches.get((int) mc.get(j - 1).first).hatchDynamic.mMoveCount = (Integer) mc.get(j - 1).second;
-            }
-        }
+//        if (branch_width > 1) {//?
+//            List<Pair> mc = new ArrayList<>();//<number of hatch, moveCount>
+//            for (int j = 0; j < dp_Results.get(0).dpTraceBack.size(); j++) {
+//                int h = (int) dp_Results.get(0).dpTraceBack.get(j).second;
+//                mc.add(new Pair(h, cwpData.hatches.get(h).hatchDynamic.mMoveCount));
+//            }
+//            Collections.sort(mc, new Comparator<Pair>() {
+//                @Override
+//                public int compare(Pair o1, Pair o2) {
+////                    return Integer.valueOf((int) o1.second).compareTo(Integer.valueOf((int) o2.second));
+//                    return (int) o1.second > (int) o2.second ? 1 : (o1.second == (int) o2.second ? 0 : -1);
+//                }
+//            });
+//            for (int j = 1; j < branch_width; j++) {
+//                cwpData.hatches.get((int) mc.get(j - 1).first).hatchDynamic.mMoveCount = 0;
+//                dp.cwpKernel(cwpData.cranes, cwpData.hatches, dp_Results.get(j));
+//                cwpData.hatches.get((int) mc.get(j - 1).first).hatchDynamic.mMoveCount = (Integer) mc.get(j - 1).second;
+//            }
+//        }
 
         for (int i = 0; i < branch_width; i++) {
 
@@ -128,7 +150,7 @@ public class CWP {
                 hatchDynamic.setmCurrentWorkPosition(cwpData.hatches.get(j).hatchDynamic.mCurrentWorkPosition);
                 tmp_hatch_dy.add(hatchDynamic);
             }
-            CwpSolution tmp_solution = cwpData.cwpCurSolution;
+            CwpSolution tmp_solution = cwpData.cwpCurSolution.deepCopy();
 
             //recursive
             List<CwpBlock> cwp_block = new ArrayList<>();
@@ -136,16 +158,16 @@ public class CWP {
                     cwpData.cranes, cwpData.hatches, cwp_block);
             cwpData.cwpCurSolution.getCwpResult().add(cwp_block);//?
             cwpData.cwpCurSolution.setCwpWorkTime(cwpData.cwpCurSolution.getCwpWorkTime() + time);
-            cwpSearch(depth + 1);
+            cwpSearch(depth + 1);//?
 
             //recovery data
             for (int k = 0; k < tmp_crane_dy.size(); k++) {
-                cwpData.cranes.get(k).craneDynamic = tmp_crane_dy.get(k);
+                cwpData.cranes.get(k).craneDynamic = tmp_crane_dy.get(k).deepCopy();
             }
             for (int k = 0; k < tmp_hatch_dy.size(); k++) {
-                cwpData.hatches.get(k).hatchDynamic = tmp_hatch_dy.get(k);
+                cwpData.hatches.get(k).hatchDynamic = tmp_hatch_dy.get(k).deepCopy();
             }
-            cwpData.cwpCurSolution = tmp_solution;
+            cwpData.cwpCurSolution = tmp_solution.deepCopy();
         }
 
     }
@@ -163,14 +185,14 @@ public class CWP {
         for (int i = 0; i < nr; i++) {
             cwp_block.add(new CwpBlock());
         }
-        int min_time = 0;
+        int min_time = Integer.MAX_VALUE;
         for (int t = 0; t < nr; t++) {
             Crane crane = cranes.get((Integer) trace_back.get(t).first);
             Hatch hatch = hatches.get((Integer) trace_back.get(t).second);
 
             cwp_block.get(t).setmCraneId(crane.getCraneId());
             cwp_block.get(t).setmHatchId(hatch.getHatchId());
-            cwp_block.get(t).setmWorkStartTime(start_time);
+            cwp_block.get(t).setmWorkStartTime(start_time); //crane work startTime
 
             if (hatch.hatchDynamic.mMoveCount == 0) {
                 cwp_block.get(t).setmTrueBlock(false);
@@ -179,7 +201,7 @@ public class CWP {
             Double last_position = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).
                     getHorizontalPosition();
             for (int k = hatch.hatchDynamic.mCurrentMoveIdx; k < hatch.getMoveCount(); k++) {
-                if (hatch.getmMoves().get(k).getHorizontalPosition() != last_position) {
+                if (hatch.getmMoves().get(k).getHorizontalPosition().doubleValue() != last_position.doubleValue()) {
                     break;
                 }
                 cwp_block.get(t).setmWorkCostTime(cwp_block.get(t).getmWorkCostTime() + cost(crane, hatch.getmMoves().get(k).getMoveType()));
@@ -190,25 +212,55 @@ public class CWP {
 
         //work
         for (int t = 0; t < nr; t++) {
-            if (!cwp_block.get(t).ismTrueBlock()) {
+            CwpBlock cwpBlock = cwp_block.get(t);
+
+            if (!cwpBlock.ismTrueBlock()) {
                 continue;
             }
             Crane crane = cranes.get((Integer) trace_back.get(t).first);
             Hatch hatch = hatches.get((Integer) trace_back.get(t).second);
             crane.craneDynamic.mCurrentPosition = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getHorizontalPosition();
 
-            cwp_block.get(t).setmWorkCostTime(0);
+            Move move = null;
+            cwpBlock.setmWorkCostTime(0);
             for (; hatch.hatchDynamic.mCurrentMoveIdx < hatch.getMoveCount(); hatch.hatchDynamic.mCurrentMoveIdx++) {
                 int cur_cost = cost(crane, hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getMoveType());
-                if (cwp_block.get(t).getmWorkCostTime() + cur_cost > min_time) {
+                if (cwpBlock.getmWorkCostTime() + cur_cost > min_time) {
                     break;
                 }
 
-                cwp_block.get(t).setmWorkCostTime(cwp_block.get(t).getmWorkCostTime() + cur_cost);
-                cwp_block.get(t).setmMoveCount(cwp_block.get(t).getmMoveCount() + 1);
-                cwp_block.get(t).getmMoves().add(hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx));
+                cwpBlock.setmWorkCostTime(cwpBlock.getmWorkCostTime() + cur_cost);
+                cwpBlock.setmMoveCount(cwpBlock.getmMoveCount() + 1);
+                cwpBlock.getmMoves().add(hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx));
+                move = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx);
             }
-            cwp_block.get(t).setmWorkEndTime(cwp_block.get(t).getmWorkStartTime() + cwp_block.get(t).getmWorkCostTime());
+            cwpBlock.setmWorkEndTime(cwpBlock.getmWorkStartTime() + cwpBlock.getmWorkCostTime());
+
+            cwpBlock.setmVesselId(hatch.getVesselId());
+            cwpBlock.setmCraneId(crane.getCraneId());
+            cwpBlock.setmHatchId(hatch.getHatchId());
+            String moveType = move.getMoveType();
+            String bayId = "";
+            int j = (int) trace_back.get(t).second;
+            if ("2".equals(moveType) || "3".equals(moveType)) {
+                bayId = String.valueOf((j + 1) * 4 - 2);
+            } else {
+                if (move.getHorizontalPosition().doubleValue() - hatch.getHorizontalStartPosition().doubleValue() == Double.valueOf(14)/4) {
+                    bayId = String.valueOf((j + 1) * 4 - 3);
+                }
+                else if (move.getHorizontalPosition().doubleValue() - hatch.getHorizontalStartPosition().doubleValue() == Double.valueOf(14)*3/4){
+                    bayId = String.valueOf((j + 1) * 4 - 1);
+                }
+                else {
+                    bayId = String.valueOf((j + 1) * 4 - 2);
+                }
+            }
+            cwpBlock.setmHatchBayId(bayId);
+            cwpBlock.setmStartMoveId(move.getMoveOrder() - cwpBlock.getmMoveCount() + 1);
+            cwpBlock.setmRealWorkStartTime(start_time);//
+            cwpBlock.setmMoveType(moveType);
+            cwpBlock.setmLD(move.getLD());
+            cwpBlock.setmCranePosition(move.getHorizontalPosition());
 
             hatch.hatchDynamic.mMoveCount = hatch.getMoveCount() - hatch.hatchDynamic.mCurrentMoveIdx;
             if (hatch.hatchDynamic.mMoveCount != 0) {
@@ -216,6 +268,10 @@ public class CWP {
             }
         }
         return min_time;
+    }
+
+    public String writeResult() {
+        return WriteResult.write1(cwpData.cwpBestSolution.getCwpResult());
     }
 
     private Integer cost(Crane crane, String moveType) {
