@@ -28,10 +28,25 @@ public class DP {
             }
         }
 
-        changeDynamicMoveCount(hatches);
+//        changeDynamicMoveCount(hatches);
 
-        if (hatches.get(0).hatchDynamic.mMoveCount != 0) {
-            dp[0][0].dpMoveCount = hatches.get(0).hatchDynamic.mMoveCount;
+        //change the hatchDynamic mMoveCount of last selected hatch
+        DPResult dpResult_copy = dpResult.deepCopy();
+        List<Pair> trace_back = dpResult_copy.dpTraceBack;
+        if (!trace_back.isEmpty()) {
+            //get out method
+            int nr = trace_back.size();
+            for (int t = 0; t < nr; t++) {
+                Hatch hatch = hatches.get((Integer) trace_back.get(t).second);
+                if (hatch.hatchDynamic.mMoveCount != 0) {
+                    hatch.hatchDynamic.mMoveCountDY = 1000;
+                }
+            }
+        }
+
+
+        if (hatches.get(0).hatchDynamic.mMoveCountDY != 0) {
+            dp[0][0].dpMoveCount = hatches.get(0).hatchDynamic.mMoveCountDY;
             dp[0][0].dpDistance = Math.abs(cranes.get(0).craneDynamic.mCurrentPosition - hatches.get(0).hatchDynamic.mCurrentWorkPosition);
             dp[0][0].dpTraceBack.add(new Pair(0, 0));
         } else {
@@ -39,7 +54,7 @@ public class DP {
         }
         for (int i = 1; i < nc; i++) {
             DPResult cur_dp = new DPResult();
-            cur_dp.dpMoveCount = hatches.get(0).hatchDynamic.mMoveCount;
+            cur_dp.dpMoveCount = hatches.get(0).hatchDynamic.mMoveCountDY;
             cur_dp.dpDistance = Math.abs(cranes.get(i).craneDynamic.mCurrentPosition - hatches.get(0).hatchDynamic.mCurrentWorkPosition);
             if (better(cur_dp, dp[i - 1][0])) {
                 dp[i][0] = cur_dp.deepCopy();
@@ -50,7 +65,7 @@ public class DP {
         }
         for (int j = 1; j < nh; j++) {
             DPResult cur_dp = new DPResult();
-            cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCount;
+            cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCountDY;
             cur_dp.dpDistance = Math.abs(cranes.get(0).craneDynamic.mCurrentPosition - hatches.get(j).hatchDynamic.mCurrentWorkPosition);
             if (better(cur_dp, dp[0][j - 1])) {
                 dp[0][j] = cur_dp.deepCopy();
@@ -61,17 +76,19 @@ public class DP {
         }
 
         for (int i = 1; i < nc; i++) {
-            for (int j = 1; j < nh; j++) {
+            Crane crane = cranes.get(i);
+            for (int j = crane.craneDynamic.mMoveRangeFrom - 1; j < crane.craneDynamic.mMoveRangeTo + 1; j++) {
                 // if crane[i] is in hatch[j]
                 DPResult cur_dp = new DPResult();
-                int k = j;
+//                int k = j;
+                int k = cranes.get(i - 1).craneDynamic.mMoveRangeTo;
                 for (; k >= 0 && hatches.get(j).hatchDynamic.mCurrentWorkPosition - 2 * cranes.get(i).getSafeSpan() <= hatches.get(k).hatchDynamic.mCurrentWorkPosition; k--)
                     ;
                 if (k < 0) {
-                    cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCount;
+                    cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCountDY;
                     cur_dp.dpDistance = Math.abs(cranes.get(i).craneDynamic.mCurrentPosition - hatches.get(j).hatchDynamic.mCurrentWorkPosition);
                 } else {
-                    cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCount + dp[i - 1][k].dpMoveCount;
+                    cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCountDY + dp[i - 1][k].dpMoveCount;
                     cur_dp.dpDistance = Math.abs(cranes.get(i).craneDynamic.mCurrentPosition - hatches.get(j).hatchDynamic.mCurrentWorkPosition) + dp[i - 1][k].dpDistance;
                     cur_dp.dpTraceBack = dp[i - 1][k].dpTraceBack;
                 }

@@ -15,12 +15,15 @@ public class HatchDynamic implements Serializable{
     public Integer mMoveCountL;
     public Integer mMoveCountR;
 
+    public Integer mMoveCountDY;
+
     public HatchDynamic() {
         mMoveCount = 0;
         mCurrentMoveIdx = 0;
         mCurrentWorkPosition = 0.0;
         mMoveCountL = 0;
         mMoveCountR = 0;
+        mMoveCountDY = 0;
     }
 
     public Double getmCurrentWorkPosition() {

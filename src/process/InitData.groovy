@@ -97,6 +97,7 @@ public class InitData {
                 hatch.moveCount = it.MOVECOUNT;
                 hatch.hatchDynamic.mMoveCountL = it.MOVECOUNT;
                 hatch.hatchDynamic.mMoveCount = it.MOVECOUNT;
+                hatch.hatchDynamic.mMoveCountDY = it.MOVECOUNT;
                 hatch.hatchDynamic.mCurrentMoveIdx = 0;
                 hatch.hatchNo = it.NO;
                 hatch.hatchSeq = it.SEQ;

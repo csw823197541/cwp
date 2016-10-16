@@ -1,7 +1,6 @@
 package test;
 
 import process.CWP;
-import process.CWP1;
 import test.view.CwpResultFrame;
 import test.view.CwpResultInfo;
 import test.view.CwpResultInfoProcess;
@@ -15,11 +14,11 @@ import java.util.List;
  * Created by csw on 2016/8/24 15:49.
  * Explain:
  */
-public class Test {
+public class Test9_07_2 {
 
     public static void main(String[] args) {
 
-        String filePath = "toCwpData8.26/";
+        String filePath = "toCwpData8.15/";
         String crane = FileUtil.readFileToString(new File(filePath + "crane.txt")).toString();
         String hatch = FileUtil.readFileToString(new File(filePath + "hatch.txt")).toString();
         String move = FileUtil.readFileToString(new File(filePath + "moves.txt")).toString();

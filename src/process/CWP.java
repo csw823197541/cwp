@@ -13,9 +13,12 @@ public class CWP {
     private CwpData cwpData;
     private DPResult dpResult;
 
+    private Map<Integer, List<Hatch>> craneMoveFromToMap;
+
     public CWP() {
         cwpData = new CwpData();
         dpResult = new DPResult();
+        craneMoveFromToMap = new HashMap<>();
     }
 
     public void initData(String craneJsonStr, String hatchJsonStr, String moveJsonStr) {
@@ -43,6 +46,11 @@ public class CWP {
             if (hatch.hatchDynamic.mMoveCount != 0) {
                 hatch.hatchDynamic.mCurrentWorkPosition = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getHorizontalPosition();
             }
+        }
+
+        //init crane move in hatch from where to where
+        for (int c = 0; c < cwpData.cranes.size(); c++) {
+            craneMoveFromToMap.put(c, new ArrayList<Hatch>());
         }
     }
 
@@ -77,9 +85,65 @@ public class CWP {
         return moves;
     }
 
+    //test DP
     public void cwpKernel() {
         DP dp = new DP();
         dp.cwpKernel(cwpData.cranes, cwpData.hatches, dpResult);
+    }
+
+    //divide the crane move range
+    public void craneMoveRange() {
+        int nc = cwpData.cranes.size();
+        int nh = cwpData.hatches.size();
+
+        int mean = 0;
+        int allMoveCount = 0;
+        for (Hatch hatch : cwpData.hatches) {
+            allMoveCount += hatch.hatchDynamic.mMoveCount;
+        }
+        mean = allMoveCount / nc;
+
+        int c = 0;
+        int tmpMoveCount = 0;
+        for (int j = 0; j < nh; j++) {
+            Hatch hatch = cwpData.hatches.get(j);
+            tmpMoveCount += hatch.hatchDynamic.mMoveCount;
+            int meanL = (int) (mean - mean * 0.1);
+            int meanR = (int) (mean + mean * 0.1);
+            if (tmpMoveCount >= meanL && tmpMoveCount <= meanR) {
+                craneMoveFromToMap.get(c).add(hatch);
+                Crane crane = cwpData.cranes.get(c);
+//                crane.craneDynamic.mMoveRangeTo = hatch.getHorizontalStartPosition();
+                crane.craneDynamic.mMoveRangeTo = j;
+                int cc = craneMoveFromToMap.get(c).size();
+//                crane.craneDynamic.mMoveRangeFrom = cwpData.hatches.get(j + 1 - cc).getHorizontalStartPosition();
+                crane.craneDynamic.mMoveRangeFrom = j + 1 - cc;
+                c++;
+                tmpMoveCount = 0;
+            }
+            else if (tmpMoveCount > meanR) {
+                hatch.hatchDynamic.mMoveCountL = hatch.hatchDynamic.mMoveCount - (tmpMoveCount - mean);
+                hatch.hatchDynamic.mMoveCountR = tmpMoveCount - mean;
+                craneMoveFromToMap.get(c).add(hatch);
+                Crane crane = cwpData.cranes.get(c);
+//                crane.craneDynamic.mMoveRangeTo = hatch.getHorizontalStartPosition();
+                crane.craneDynamic.mMoveRangeTo = j;
+                int cc = craneMoveFromToMap.get(c).size();
+//                crane.craneDynamic.mMoveRangeFrom = cwpData.hatches.get(j + 1 - cc).getHorizontalStartPosition();
+                crane.craneDynamic.mMoveRangeFrom = j + 1 - cc;
+                c++;
+                tmpMoveCount = hatch.hatchDynamic.mMoveCountR;
+            }
+            else {
+                craneMoveFromToMap.get(c).add(hatch);
+                Crane crane = cwpData.cranes.get(c);
+//                crane.craneDynamic.mMoveRangeTo = hatch.getHorizontalStartPosition();
+                crane.craneDynamic.mMoveRangeTo = j;
+                int cc = craneMoveFromToMap.get(c).size();
+//                crane.craneDynamic.mMoveRangeFrom = cwpData.hatches.get(j + 1 - cc).getHorizontalStartPosition();
+                crane.craneDynamic.mMoveRangeFrom = j + 1 - cc;
+            }
+        }
     }
 
     public void cwpSearch(int depth) {
@@ -107,7 +171,7 @@ public class CWP {
 //            dp_Results.add(new DPResult());
 //        }
         DP dp = new DP();
-        DPResult dpResult = new DPResult();
+//        DPResult dpResult = new DPResult();
         dpResult = dp.cwpKernel(cwpData.cranes, cwpData.hatches, dpResult);
         dp_Results.add(dpResult);
 
@@ -263,6 +327,7 @@ public class CWP {
             cwpBlock.setmCranePosition(move.getHorizontalPosition());
 
             hatch.hatchDynamic.mMoveCount = hatch.getMoveCount() - hatch.hatchDynamic.mCurrentMoveIdx;
+            hatch.hatchDynamic.mMoveCountDY = hatch.hatchDynamic.mMoveCount;
             if (hatch.hatchDynamic.mMoveCount != 0) {
                 hatch.hatchDynamic.mCurrentWorkPosition = hatch.getmMoves().get(hatch.hatchDynamic.mCurrentMoveIdx).getHorizontalPosition();
             }
