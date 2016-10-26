@@ -24,7 +24,8 @@ public class CWP {
     public void initData(String craneJsonStr, String hatchJsonStr, String moveJsonStr) {
 
         List<Crane> inputCranes = sortCraneByPosition(InitData.initCrane(craneJsonStr));
-        for (int k = 0; k < 4; k++) {
+        int craneSize = inputCranes.size() >= 4 ? 4 : inputCranes.size();
+        for (int k = 0; k < craneSize; k++) {
             cwpData.cranes.add(inputCranes.get(k));
         }
 
@@ -111,6 +112,9 @@ public class CWP {
             int meanL = (int) (mean - mean * 0.1);
             int meanR = (int) (mean + mean * 0.1);
             if (tmpMoveCount >= meanL && tmpMoveCount <= meanR) {
+                if (c == cwpData.cranes.size()) {
+                    c = cwpData.cranes.size() - 1;
+                }
                 craneMoveFromToMap.get(c).add(hatch);
                 Crane crane = cwpData.cranes.get(c);
 //                crane.craneDynamic.mMoveRangeTo = hatch.getHorizontalStartPosition();
@@ -122,6 +126,9 @@ public class CWP {
                 tmpMoveCount = 0;
             }
             else if (tmpMoveCount > meanR) {
+                if (c == cwpData.cranes.size()) {
+                    c = cwpData.cranes.size() - 1;
+                }
                 hatch.hatchDynamic.mMoveCountL = hatch.hatchDynamic.mMoveCount - (tmpMoveCount - mean);
                 hatch.hatchDynamic.mMoveCountR = tmpMoveCount - mean;
                 craneMoveFromToMap.get(c).add(hatch);
@@ -135,6 +142,9 @@ public class CWP {
                 tmpMoveCount = hatch.hatchDynamic.mMoveCountR;
             }
             else {
+                if (c == cwpData.cranes.size()) {
+                    c = cwpData.cranes.size() - 1;
+                }
                 craneMoveFromToMap.get(c).add(hatch);
                 Crane crane = cwpData.cranes.get(c);
 //                crane.craneDynamic.mMoveRangeTo = hatch.getHorizontalStartPosition();
@@ -176,6 +186,10 @@ public class CWP {
         dp_Results.add(dpResult);
 
         branch_width = Math.min(branch_width, dp_Results.get(0).dpTraceBack.size());
+
+//        if (depth > 50) {
+//            branch_width = 0;
+//        }
 
 //        if (branch_width > 1) {//?
 //            List<Pair> mc = new ArrayList<>();//<number of hatch, moveCount>

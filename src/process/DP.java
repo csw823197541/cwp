@@ -5,6 +5,8 @@ import entity.DPResult;
 import entity.Hatch;
 import entity.Pair;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +46,6 @@ public class DP {
             }
         }
 
-
         if (hatches.get(0).hatchDynamic.mMoveCountDY != 0) {
             dp[0][0].dpMoveCount = hatches.get(0).hatchDynamic.mMoveCountDY;
             dp[0][0].dpDistance = Math.abs(cranes.get(0).craneDynamic.mCurrentPosition - hatches.get(0).hatchDynamic.mCurrentWorkPosition);
@@ -77,14 +78,14 @@ public class DP {
 
         for (int i = 1; i < nc; i++) {
             Crane crane = cranes.get(i);
-            for (int j = crane.craneDynamic.mMoveRangeFrom - 1; j < crane.craneDynamic.mMoveRangeTo + 1; j++) {
+            for (int j = crane.craneDynamic.mMoveRangeFrom; j < crane.craneDynamic.mMoveRangeTo + 1; j++) {
                 // if crane[i] is in hatch[j]
                 DPResult cur_dp = new DPResult();
 //                int k = j;
                 int k = cranes.get(i - 1).craneDynamic.mMoveRangeTo;
-                for (; k >= 0 && hatches.get(j).hatchDynamic.mCurrentWorkPosition - 2 * cranes.get(i).getSafeSpan() <= hatches.get(k).hatchDynamic.mCurrentWorkPosition; k--)
+                for (; k >= cranes.get(i - 1).craneDynamic.mMoveRangeFrom && hatches.get(j).hatchDynamic.mCurrentWorkPosition - 2 * cranes.get(i).getSafeSpan() <= hatches.get(k).hatchDynamic.mCurrentWorkPosition; k--)
                     ;
-                if (k < 0) {
+                if (k < cranes.get(i - 1).craneDynamic.mMoveRangeFrom) {
                     cur_dp.dpMoveCount = hatches.get(j).hatchDynamic.mMoveCountDY;
                     cur_dp.dpDistance = Math.abs(cranes.get(i).craneDynamic.mCurrentPosition - hatches.get(j).hatchDynamic.mCurrentWorkPosition);
                 } else {
@@ -95,20 +96,38 @@ public class DP {
 
                 // dp compare ?
                 DPResult tmp_dp = new DPResult();
-                if (better(dp[i][j - 1], dp[i - 1][j])) {
-                    tmp_dp = dp[i][j - 1].deepCopy();
-                } else {
-                    tmp_dp = dp[i - 1][j].deepCopy();
-                }
+//                if (better(dp[i][j - 1], dp[i - 1][j])) {
+//                    tmp_dp = dp[i][j - 1].deepCopy();
+//                } else {
+//                    tmp_dp = dp[i - 1][j].deepCopy();
+//                }
+//
+//                if (better(cur_dp, tmp_dp)) {
+//                    dp[i][j] = cur_dp.deepCopy();
+//                    dp[i][j].dpTraceBack.add(new Pair(i, j));
+//                } else {
+//                    dp[i][j] = tmp_dp.deepCopy();
+//                }
 
-                if (better(cur_dp, tmp_dp)) {
-                    dp[i][j] = cur_dp.deepCopy();
-                    dp[i][j].dpTraceBack.add(new Pair(i, j));
+                if (j > crane.craneDynamic.mMoveRangeFrom) {
+                    tmp_dp = dp[i][j - 1].deepCopy();
+                    if (better(cur_dp, tmp_dp)) {
+                        dp[i][j] = cur_dp.deepCopy();
+                        if (hatches.get(j).hatchDynamic.mMoveCount > 0) {
+                            dp[i][j].dpTraceBack.add(new Pair(i, j));
+                        }
+                    } else {
+                        dp[i][j] = tmp_dp.deepCopy();
+                    }
                 } else {
-                    dp[i][j] = tmp_dp.deepCopy();
+                    dp[i][j] = cur_dp.deepCopy();
+                    if (hatches.get(j).hatchDynamic.mMoveCount > 0) {
+                        dp[i][j].dpTraceBack.add(new Pair(i, j));
+                    }
                 }
             }
         }
+
         dpResult = dp[nc - 1][nh - 1].deepCopy();
         return dpResult;
     }
@@ -118,11 +137,11 @@ public class DP {
             Hatch hatch = hatches.get(j);
             if (hatch.getMoveCount() != 0) {
                 if (j == 0) {
-                    hatch.hatchDynamic.mMoveCountL = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
+                    hatch.hatchDynamic.mMoveCountDY = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
                 } else if (j == hatches.size() - 1) {
-                    hatch.hatchDynamic.mMoveCountL = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j - 1).hatchDynamic.mMoveCount;
+                    hatch.hatchDynamic.mMoveCountDY = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j - 1).hatchDynamic.mMoveCount;
                 } else {
-                    hatch.hatchDynamic.mMoveCountL = hatches.get(j - 1).hatchDynamic.mMoveCount + 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
+                    hatch.hatchDynamic.mMoveCountDY = hatches.get(j - 1).hatchDynamic.mMoveCount + 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
                 }
             }
         }
