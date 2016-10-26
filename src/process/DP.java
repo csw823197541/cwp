@@ -96,6 +96,7 @@ public class DP {
 
                 // dp compare ?
                 DPResult tmp_dp = new DPResult();
+
 //                if (better(dp[i][j - 1], dp[i - 1][j])) {
 //                    tmp_dp = dp[i][j - 1].deepCopy();
 //                } else {
