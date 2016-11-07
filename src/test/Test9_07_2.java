@@ -26,7 +26,7 @@ public class Test9_07_2 {
         CWP cwp = new CWP();
         long dyStartTime = System.currentTimeMillis();
         cwp.initData(crane, hatch, move);
-        cwp.craneMoveRange();
+        cwp.divideCraneMoveRange();
         cwp.cwpSearch(0);
         long dyEndTime = System.currentTimeMillis();
         String str = cwp.writeResult();

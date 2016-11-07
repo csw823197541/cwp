@@ -1,9 +1,6 @@
 package process;
 
-import entity.Crane;
-import entity.DPResult;
-import entity.Hatch;
-import entity.Pair;
+import entity.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -29,8 +26,6 @@ public class DP {
                 dp[i][j] = new DPResult();
             }
         }
-
-//        changeDynamicMoveCount(hatches);
 
         //change the hatchDynamic mMoveCount of last selected hatch
         DPResult dpResult_copy = dpResult.deepCopy();
@@ -131,21 +126,6 @@ public class DP {
 
         dpResult = dp[nc - 1][nh - 1].deepCopy();
         return dpResult;
-    }
-
-    private void changeDynamicMoveCount(List<Hatch> hatches) {
-        for (int j = 0; j < hatches.size(); j++) {
-            Hatch hatch = hatches.get(j);
-            if (hatch.getMoveCount() != 0) {
-                if (j == 0) {
-                    hatch.hatchDynamic.mMoveCountDY = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
-                } else if (j == hatches.size() - 1) {
-                    hatch.hatchDynamic.mMoveCountDY = 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j - 1).hatchDynamic.mMoveCount;
-                } else {
-                    hatch.hatchDynamic.mMoveCountDY = hatches.get(j - 1).hatchDynamic.mMoveCount + 2 * hatch.hatchDynamic.mMoveCount + hatches.get(j + 1).hatchDynamic.mMoveCount;
-                }
-            }
-        }
     }
 
     private boolean better(DPResult cur_dp, DPResult dpResult) {
